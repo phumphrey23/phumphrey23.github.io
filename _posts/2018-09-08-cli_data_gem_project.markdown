@@ -19,7 +19,19 @@ How it was going to work:
 3. The user would choose which recipe they’d like to try
 4. The gem would scrape the chosen recipe for a list of ingredients and instructions
 
-Initially I started to follow the Student Scraper approach with my scraper and push the collected recipe info into hashes and arrays.  I ran into a wall trying to test/run my program so I got some help from Project Support.  This session was so important! I had almost no practice debugging with pry.  I relied too much on passing tests in past projects.  I also learned the importance of objects.  Using hashes and arrays was literally the opposite of what Object Oriented Ruby is about.  I learned that I could utilize my recipe objects by adding attributes to those instances of recipes I created from the info I scraped.
+Initially I started to follow the Student Scraper approach with my scraper and push the collected recipe info into hashes and arrays.  
+
+```
+def self.scrape_recipe_info(recipe_url)
+    recipe_page = Nokogiri::HTML(open(recipe_url))
+    recipe = {}
+    recipe[:ingredients] = recipe_page.search(".ingredients__section li").map{ |li| li.text.gsub(/\s+/," ")}
+    recipe[:instructions] = recipe_page.search(".prep-steps li").map{ |li| li.text.gsub(/\s+/," ")}
+    puts recipe
+	end
+```
+
+I ran into a wall trying to test/run my program so I got some help from Project Support.  This session was so important! I had almost no practice debugging with pry.  I relied too much on passing tests in past projects.  I also learned the importance of objects.  Using hashes and arrays was literally the opposite of what Object Oriented Ruby is about.  I learned that I could utilize my recipe objects by adding attributes to those instances of recipes I created from the info I scraped.
 
 I knew about objects and how to instantiate them from all the labs I’ve done but this session really brought it all together for me.  I knew the "how" and now I got the “why”.  This made EVERYTHING much easier to understand.
 
@@ -31,16 +43,41 @@ Major issues to resolve:
 * Search not found
 * Recipes within a recipe's title
 
-I used a bunch of if statements to restart the program if a user input anything invalid when prompted or a search wasn’t’t found.  Initially I wanted users to only search ingredients but because of how I generated the search url based on the input, they could search anything.  Searching by a course, meal name, or anything food related that would produce something from tasty.co worked for my gem.  Instead of figuring out some way to narrow the search, I changed the prompt message to let users search a wider scope.
+I used a bunch of if statements to restart the program if a user input anything invalid when prompted or a search wasn’t found.  Initially I wanted users to only search ingredients but because of how I generated the search url based on the input, they could search anything.  Searching by a course, meal name, or anything food related that would produce something from tasty.co worked for my gem.  Instead of figuring out some way to narrow the search, I changed the prompt message to let users search a wider scope.
 
-What gave me the hardest time was scraping titles within titles.  Tasty has compilations of recipes within their recipe options.  A title such as “Meal Prep Breakfast for the Week” contained 11 recipes within.  Luckily, if a recipe was a compilation it literally had the word “compilation” in the url.  
+What gave me the hardest time was scraping titles within titles.  Tasty has compilations of recipes within their recipe options.  A title such as “[Meal Prep Breakfast for the Week](https://tasty.co/compilation/meal-prep-breakfast-for-the-week)” contained 11 recipes within.  Luckily, if a recipe was a compilation it literally had the word “compilation” in the url.  
 
-I used an if statement for the recipe_title scraper that would choose which nokogiri selector to use if the url had “complication”.  The hard part was figuring out which method would take care of running through all the following steps of printing those titles, taking in the user input for the selected recipe, and displaying the ingredients and instructions.  It was a loop within a loop situation.  One that I had not seen during this program or had any references on how to approach.
+I used an if statement for the recipe_title scraper that would choose which nokogiri selector to use if the url had “compilation”.  
+
+```
+def self.scrape_recipe(url)
+    if url.include?("compilation")
+    recipe_posts = Nokogiri::HTML(open(url)).css(".compilation-recipes__list").css(".feed-item")
+   else
+     recipe_posts = Nokogiri::HTML(open(url)).css(".feed-item")
+   end
+```
+
+The hard part was figuring out which method would take care of running through all the following steps of printing those titles, taking in the user input for the selected recipe, and displaying the ingredients and instructions.  It was a loop within a loop situation.  One that I had not seen during this program or had any references on how to approach.
 
 I decided to address it in the recipe_info method from my Interface.  When the scrape_recipe_info method was called on a compilation recipe, it produced an empty array for ingredients and instruction.  I used this as a condition to determine whether it should print the recipe info and finish or fall into the secondary loop.  This got me the results I wanted.
+
+```
+   if selected_recipe.ingredients != [] && selected_recipe.instructions != []
+        print_recipe(selected_recipe)
+      else
+        TastyRecipes::Recipe.all.clear
+        TastyRecipes::Scraper.scrape_recipe(selected_recipe.url)
+        puts "Enter the number of the recipe you'd like to try from this compilation"
+        print_titles
+        puts "Enter the number of the recipe you would like to try"
+        selected_recipe_num = gets.chomp
+        recipe_info(selected_recipe_num)
+      end
+```
 
 This was a great project to help me put to use everything I’ve learned so far.  I got three major take aways from this project:
 
 1. The importance of objects
 2. Debugging
-3. How to use Atom (which is so major, I wrote a separate post about it [here](https://tasty.co/).)
+3. How to use Atom (which is so major, I wrote a separate post about it [here](https://phumphrey23.github.io/).)
