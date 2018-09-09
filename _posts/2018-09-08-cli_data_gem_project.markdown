@@ -50,12 +50,12 @@ What gave me the hardest time was scraping titles within titles.  Tasty has comp
 I used an if statement for the recipe_title scraper that would choose which nokogiri selector to use if the url had “compilation”.  
 
 ```
-def self.scrape_recipe(url)
-    if url.include?("compilation")
-    recipe_posts = Nokogiri::HTML(open(url)).css(".compilation-recipes__list").css(".feed-item")
-   else
-     recipe_posts = Nokogiri::HTML(open(url)).css(".feed-item")
-   end
+     def self.scrape_recipe(url)
+         if url.include?("compilation")
+            recipe_posts = Nokogiri::HTML(open(url)).css(".compilation-recipes__list").css(".feed-item")
+        else
+            recipe_posts = Nokogiri::HTML(open(url)).css(".feed-item")
+         end
 ```
 
 The hard part was figuring out which method would take care of running through all the following steps of printing those titles, taking in the user input for the selected recipe, and displaying the ingredients and instructions.  It was a loop within a loop situation.  One that I had not seen during this program or had any references on how to approach.
@@ -63,7 +63,7 @@ The hard part was figuring out which method would take care of running through a
 I decided to address it in the recipe_info method from my Interface.  When the scrape_recipe_info method was called on a compilation recipe, it produced an empty array for ingredients and instruction.  I used this as a condition to determine whether it should print the recipe info and finish or fall into the secondary loop.  This got me the results I wanted.
 
 ```
-   if selected_recipe.ingredients != [] && selected_recipe.instructions != []
+      if selected_recipe.ingredients != [] && selected_recipe.instructions != []
         print_recipe(selected_recipe)
       else
         TastyRecipes::Recipe.all.clear
