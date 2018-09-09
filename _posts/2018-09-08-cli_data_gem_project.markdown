@@ -51,11 +51,11 @@ I used an if statement for the recipe_title scraper that would choose which noko
 
 ```
      def self.scrape_recipe(url)
-         if url.include?("compilation")
+        if url.include?("compilation")
             recipe_posts = Nokogiri::HTML(open(url)).css(".compilation-recipes__list").css(".feed-item")
         else
             recipe_posts = Nokogiri::HTML(open(url)).css(".feed-item")
-         end
+        end
 ```
 
 The hard part was figuring out which method would take care of running through all the following steps of printing those titles, taking in the user input for the selected recipe, and displaying the ingredients and instructions.  It was a loop within a loop situation.  One that I had not seen during this program or had any references on how to approach.
