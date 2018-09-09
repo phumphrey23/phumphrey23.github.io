@@ -80,4 +80,4 @@ This was a great project to help me put to use everything I’ve learned so far.
 
 1. The importance of objects
 2. Debugging
-3. How to use Atom (which is so major, I wrote a separate post about it [here](https://phumphrey23.github.io/using_learn_ide_vs_atom).)
+3. How to use Atom (which is so major, I wrote a separate post about it [here](https://phumphrey23.github.io/learn_ide_vs_atom).)
